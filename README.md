@@ -15,7 +15,7 @@ MS SQL Server Management Studio while managing database resources to ensure sati
 I also I created all necessary models, services, and controllers to connect API calls to access data in the CARTE database. Utilized ASP.NET MVC to build models in C# designing model routing, model validation, and 
 dependency injection to validate data during my work on this web application. Created controllers in ASP.NET to pass data to our View in React.js utilizing JavaScript, 
 Bootstrap, CSS, and basic HTML5. 
-(see Carte SQL repo)
+(see Carte .NET repo)
 
 Established application with a team in AGILE environment, regularly using source-control (Git and GitHub) and participated in daily scrum meetings, peer code reviews and team code talks to ensure 
 code quality and continuity. Enthusiastically engaged with my development team throughout the Software Development Life Cycle utilizing peer planning sessions, code reviews, virtual pair programming, source control process, 
