@@ -1,7 +1,3 @@
-# Carte
-Config files for my GitHub profile.
-
-
  # Awesome Recruiters
 
 Hi there, I am [Juan](https://www.linkedin.com/in/jasencio/) 👋, 
