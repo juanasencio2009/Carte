@@ -1,8 +1,8 @@
- # Awesome Recruiters
+ # Dear Recruiters
 
 Hi there, I am [Juan](https://www.linkedin.com/in/jasencio/) 👋, 
 
-I am a Fullstack developer, currently working for Carte's MVP. My role in this project has been to set everything from the ground up to allow a restaurant's menuEditor to manage their resraurants menu items. 
+I am a Fullstack developer, currently working for Carte's MVP. My role in this project has been to set everything from the ground up to allow a restaurant's menuEditor to manage their restaurants menu items. 
 They can see their menu items via rendered cards (mobile friendly), and path to add and edit menu items details such as name, price, description, images, ingredients, tags, etc.
 Implemented dynamic frontend dropdowns, cards, tables, and rendered data that allow restaurant administrators to analyze, create, and edit data in the database
 (see Carte React repo)
