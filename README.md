@@ -2,7 +2,7 @@
 Config files for my GitHub profile.
 
 
- # Awesome Recruitment
+ # Awesome Recruiters
 
 Hi there, I am [Juan](https://www.linkedin.com/in/jasencio/) 👋, 
 
