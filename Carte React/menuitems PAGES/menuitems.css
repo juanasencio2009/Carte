@@ -1,0 +1,39 @@
+.menu-item-form-input {
+    margin-left: 12px;
+    margin-top: 12px;
+
+    max-width: 500px;
+}
+.menu-item-row {
+    margin-top: 49px;
+}
+.menu-item-error-message {
+    color: red;
+}
+.menu-item-form-button {
+    margin-left: 12px;
+    max-width: 150px;
+}
+.menu-items-by-org-row {
+    margin-left: 0px;
+    margin-top: 25px;
+}
+.menu-items-by-org-button {
+    height: 37px;
+    margin-top: 30px;
+}
+.menu-items-image-container {
+    height: 250px;
+    width: auto;
+    display: flex;
+}
+.menu-item-image {
+    object-fit: cover;
+    height: 100%;
+    width: 100%;
+}
+.menu-item-card-button {
+    align-self: center;
+    align-content: center;
+    margin-left: 20%;
+}
