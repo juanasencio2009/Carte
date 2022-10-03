@@ -1,5 +1,6 @@
  # Dear Coders || Recruiters
 
+Languages: HTML, CSS, JAVASCRIPT, REACT, C#, SQL
 
 Greetings, I am [Juan from San Juan](https://www.linkedin.com/in/jasencio/) 👋, 
 
