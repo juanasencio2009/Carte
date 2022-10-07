@@ -24,7 +24,7 @@ Sr Dev-Jr Dev interactions, and peer-peer testing.
 
 
 https://lacarte.azurewebsites.net/
-^^LIVE WEBSITE^^
+<---LIVE WEBSITE---
 
 I truly enjoyed working with in this project and having the privilige to see it get built from the ground up. ❤️ 
 
