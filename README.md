@@ -22,6 +22,10 @@ Established application with a team in AGILE environment, regularly using source
 code quality and continuity. Enthusiastically engaged with my development team throughout the Software Development Life Cycle utilizing peer planning sessions, code reviews, virtual pair programming, source control process, 
 Sr Dev-Jr Dev interactions, and peer-peer testing.
 
+
+https://lacarte.azurewebsites.net/
+^^LIVE WEBSITE^^
+
 I truly enjoyed working with in this project and having the privilige to see it get built from the ground up. ❤️ 
 
 
