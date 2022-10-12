@@ -7,18 +7,16 @@ import { Col, Row } from 'react-bootstrap';
 import toastr from 'toastr';
 import Pagination from 'rc-pagination';
 import MenuItemCard from './MenuItemCard';
+import PropTypes from 'prop-types';
 
 import 'toastr/build/toastr.min.css';
 import 'rc-pagination/assets/index.css';
 import './menuitems.css';
 
 const _logger = logger.extend('MenuItems');
-const orgId = 1; //NOTE: this will be the user.orgId
-let pageIndex = 0;
-const pageSize = 6;
-let queryString = '';
 
-function MenuItems() {
+function MenuItems(props) {
+    const organizationId = props.currentUserOrg.id;
     const navigate = useNavigate();
     const [menuItems, setMenuItems] = useState([]);
     const [queryState, setQueryState] = useState();
@@ -26,16 +24,16 @@ function MenuItems() {
         totalCount: 0,
         currentPage: 0,
     });
+    let pageIndex = 0;
+    const pageSize = 6;
+    let queryString = '';
 
     useEffect(() => {
-        serviceCalls();
-    }, []);
-    const serviceCalls = () => {
         menuItemsService
-            .getPagedQueryByOrgId(orgId, pageIndex, pageSize, queryString)
+            .getPagedQueryByOrgId(organizationId, pageIndex, pageSize, queryString)
             .then(getMenuItemsSuccess)
             .catch(getMenuItemsError);
-    };
+    }, []);
     const getMenuItemsSuccess = (data) => {
         _logger('getMenuItemsSuccess', data.item);
         let totalCount = data.item.totalCount;
@@ -47,6 +45,7 @@ function MenuItems() {
 
         let menuItemArray = data.item.pagedItems;
         menuItemArray.map((item) => {
+            item.organization = item.organization.id;
             item.unitCost = parseFloat(item.unitCost).toFixed(2);
             return item;
         });
@@ -56,10 +55,14 @@ function MenuItems() {
         _logger('onERROR', err);
         toastr.error('Oops, something went wrong when fetching your menu items.');
     };
-
     const onSearchChange = (e) => {
         let query = e.target.value;
         setQueryState(query);
+    };
+    const handleKeyDown = (e) => {
+        if (e.key === 'Enter') {
+            onSearchClicked();
+        }
     };
     const onSearchClicked = () => {
         if (queryState) {
@@ -67,14 +70,14 @@ function MenuItems() {
             pageIndex = 0;
         }
         menuItemsService
-            .getPagedQueryByOrgId(orgId, pageIndex, pageSize, queryString)
+            .getPagedQueryByOrgId(organizationId, pageIndex, pageSize, queryString)
             .then(getMenuItemsSuccess)
             .catch(getMenuItemsError);
     };
     const onPaginate = (e) => {
         pageIndex = e - 1;
         menuItemsService
-            .getPagedQueryByOrgId(orgId, pageIndex, pageSize, queryString)
+            .getPagedQueryByOrgId(organizationId, pageIndex, pageSize, queryString)
             .then(getMenuItemsSuccess)
             .catch(getMenuItemsError);
 
@@ -116,6 +119,7 @@ function MenuItems() {
                                         type="search"
                                         className="form-control"
                                         onChange={onSearchChange}
+                                        onKeyDown={handleKeyDown}
                                     />
                                 </div>
                                 <button
@@ -152,5 +156,9 @@ function MenuItems() {
         </React.Fragment>
     );
 }
-
+MenuItems.propTypes = {
+    currentUserOrg: PropTypes.shape({
+        id: PropTypes.number.isRequired,
+    }),
+};
 export default MenuItems;

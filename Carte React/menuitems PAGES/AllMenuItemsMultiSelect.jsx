@@ -6,31 +6,33 @@ import toastr from 'toastr';
 import 'toastr/build/toastr.min.css';
 import logger from 'sabio-debug';
 import menuItemsService from '../../services/menuItemsService';
+import PropTypes from 'prop-types';
 
 const _logger = logger.extend('AllMenuItemsMultiSelect');
 
-function AllMenuItemsMultiSelect() {
+function AllMenuItemsMultiSelect(props) {
     const location = useLocation();
-
+    const organizationId = props.organizationId;
     const [menuItems, setMenuItems] = useState({
         allMenuItems: [],
     });
     const { setFieldValue } = useFormikContext();
-    const orgId = 1; //NOTE: this will be the user.orgId in a new proc PR
 
     useEffect(() => {
-        getAllByOrgId();
-    }, []);
+        if (organizationId > 0) {
+            getAllByOrgId();
+        }
+    }, [organizationId]);
     const getAllByOrgId = () => {
-        menuItemsService.getAllByOrgId(orgId).then(getMenuItemsSuccess).catch(getMenuItemsError);
+        _logger('organizationId', organizationId);
+        menuItemsService.getAllByOrgId(organizationId).then(getMenuItemsSuccess).catch(getMenuItemsError);
     };
 
     const getMenuItemsSuccess = (response) => {
         let arrayOfItems = response?.item;
         setMenuItems({ allMenuItems: arrayOfItems });
     };
-    const getMenuItemsError = (response) => {
-        _logger('response-->', response);
+    const getMenuItemsError = () => {
         toastr.error('Oops, something failed fetching all Menu Items');
     };
 
@@ -47,8 +49,8 @@ function AllMenuItemsMultiSelect() {
     const onSelectedChange = (e) => {
         const index = e.target.value;
         setFieldValue('id', menuItems.allMenuItems[index].id);
-        setFieldValue('organizationId', menuItems.allMenuItems[index].organization.id);
-        setFieldValue('orderStatusId', menuItems.allMenuItems[index].orderStatus.id);
+        setFieldValue('organization', organizationId);
+        setFieldValue('orderStatus', menuItems.allMenuItems[index].orderStatus.id);
         setFieldValue('unitCost', menuItems.allMenuItems[index].unitCost);
         setFieldValue('name', menuItems.allMenuItems[index].name);
         setFieldValue('description', menuItems.allMenuItems[index].description);
@@ -60,7 +62,7 @@ function AllMenuItemsMultiSelect() {
 
     return (
         <React.Fragment>
-            <label>Select a Menu Item to edit.</label>
+            <label>Select if you wish to edit a Menu Item. Do not select if you wish to create a Menu Item.</label>
             <Field
                 name="index"
                 label="selectMenuItem"
@@ -76,4 +78,7 @@ function AllMenuItemsMultiSelect() {
         </React.Fragment>
     );
 }
-export default React.memo(AllMenuItemsMultiSelect);
+AllMenuItemsMultiSelect.propTypes = {
+    organizationId: PropTypes.number, //NOTE: not required
+};
+export default AllMenuItemsMultiSelect;

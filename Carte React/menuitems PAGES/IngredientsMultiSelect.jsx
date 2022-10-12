@@ -2,8 +2,8 @@ import React from 'react';
 import { useState, useEffect } from 'react';
 import { Typeahead } from 'react-bootstrap-typeahead';
 import { useLocation } from 'react-router-dom';
-import { useFormikContext } from 'formik';
-
+import { useFormikContext, ErrorMessage } from 'formik';
+import PropTypes from 'prop-types';
 import ingredientsService from '../../services/ingredientsService';
 import toastr from 'toastr';
 import logger from 'sabio-debug';
@@ -12,7 +12,8 @@ import 'toastr/build/toastr.min.css';
 
 const _logger = logger.extend('IngredientsMultiSelect');
 
-function IngredientsMultiSelect() {
+function IngredientsMultiSelect(props) {
+    const organizationId = props?.organizationId;
     const location = useLocation();
     const { setFieldValue, values } = useFormikContext();
     const [ingredients, setIngredients] = useState({
@@ -21,13 +22,16 @@ function IngredientsMultiSelect() {
     });
 
     useEffect(() => {
-        serviceCall();
-    }, []);
+        if (organizationId > 0) {
+            serviceCall();
+        }
+    }, [organizationId]);
     const serviceCall = () => {
-        const orgId = 1; //NOTE: this will be the user.orgId
-        ingredientsService.selectIngredientsByOrgId(orgId).then(getIngredientsSuccess).catch(getIngredientsError);
+        ingredientsService
+            .selectIngredientsByOrgId(organizationId)
+            .then(getIngredientsSuccess)
+            .catch(getIngredientsError);
     };
-
     const getIngredientsSuccess = (response) => {
         let arrayOfIngredients = response?.items;
         _logger('Response from Ingre getAll', response);
@@ -37,15 +41,13 @@ function IngredientsMultiSelect() {
             return pd;
         });
     };
-
     const mappedIngredients = (mappedIngredients) => {
         return {
             id: mappedIngredients.id,
             label: mappedIngredients.name,
         };
     };
-    const getIngredientsError = (response) => {
-        _logger('getIngredientsError', response);
+    const getIngredientsError = () => {
         toastr.error('Oops, something failed fetching all Ingredients');
     };
 
@@ -59,7 +61,7 @@ function IngredientsMultiSelect() {
             let valuesName = value.map(mapPlaceholder);
             return valuesName;
         } else {
-            return 'Select Ingredients';
+            return 'Must select';
         }
     };
     const mapPlaceholder = (mappedIngredients) => {
@@ -70,7 +72,7 @@ function IngredientsMultiSelect() {
     };
     return (
         <React.Fragment>
-            <label>Select All Ingredients</label>
+            <label>Select Ingredients</label>
             <p></p>
             <Typeahead
                 id="menuIngredients"
@@ -81,8 +83,11 @@ function IngredientsMultiSelect() {
                 options={ingredients?.allIngredients}
                 placeholder={ingredientsPlaceholder()}
             />
+            <ErrorMessage name="menuIngredients" component="div" className="has-error menu-item-error-message" />
         </React.Fragment>
     );
 }
-
+IngredientsMultiSelect.propTypes = {
+    organizationId: PropTypes.number.isRequired,
+};
 export default React.memo(IngredientsMultiSelect);

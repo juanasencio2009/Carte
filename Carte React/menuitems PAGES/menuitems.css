@@ -36,4 +36,8 @@
     align-self: center;
     align-content: center;
     margin-left: 20%;
+    min-width: 75px;
+}
+.menu-item-card {
+    min-width: 250px;
 }

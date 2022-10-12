@@ -4,9 +4,10 @@ import menuItemsService from '../../services/menuItemsService';
 import PropTypes from 'prop-types';
 import toastr from 'toastr';
 import { useNavigate } from 'react-router-dom';
-import { Col, Card, Row } from 'react-bootstrap';
-import PencilSvg from './PencilSvg';
-import TrashSvg from './TrashSvg';
+import { Col, Card, Row, Button } from 'react-bootstrap';
+import { TiPencil } from 'react-icons/ti';
+import { MdDeleteForever } from 'react-icons/md';
+import Swal from 'sweetalert2';
 
 import 'toastr/build/toastr.min.css';
 import 'rc-pagination/assets/index.css';
@@ -19,45 +20,62 @@ function MenuItemCard(props) {
     const navigate = useNavigate();
 
     const showFoodSafeTypes = () => {
+        if (menuItem.menuFoodSafeType !== null) {
+            let array = menuItem.menuFoodSafeType;
+            let result = array.map(mapNames);
+            return result;
+        } else {
+            return 'None available';
+        }
+    };
+    const showTags = () => {
         if (menuItem.tags !== null) {
             let tagAr = menuItem.tags;
-            for (let index = 0; index < tagAr.length; index++) {
-                const tags = tagAr[index].name;
-                return tags;
-            }
+            let result = tagAr.map(mapNames);
+            return result;
         } else {
-            return 'No tags available';
+            return 'None available';
         }
     };
     const showIngredients = () => {
         if (menuItem.menuIngredients !== null) {
             _logger('showIngredients', menuItem);
             let menuIngredient = menuItem?.menuIngredients;
-            for (let index = 0; index < menuIngredient.length; index++) {
-                const ingredient = menuIngredient[index].name;
-                return ingredient;
-            }
+            let result = menuIngredient.map(mapNames);
+            return result;
         } else {
-            return 'No ingredients available';
+            return 'None available';
         }
+    };
+    const mapNames = (mappedTypes) => {
+        return ` ${mappedTypes.name}`;
     };
     const onEditClicked = (e) => {
         let payload = e;
-        const aMenuItem = e.id;
-        navigateToForm(aMenuItem, payload);
+        const menuItemId = e.id;
+        navigateToForm(menuItemId, payload);
     };
     const onDeleteClicked = (e) => {
         e.preventDefault();
         const aMenuItem = e.currentTarget.dataset.page;
-        menuItemsService.deleteById(aMenuItem).then(deleteItemSuccess).catch(deleteItemError);
+        Swal.fire({
+            title: 'Are you sure you want to delete this item?',
+            showCancelButton: true,
+            confirmButtonText: 'Delete',
+            denyButtonText: `Don't Delete`,
+        }).then((result) => {
+            _logger('resultDeleteSwal', result);
+            if (result.isConfirmed) {
+                menuItemsService.deleteById(aMenuItem).then(deleteItemSuccess).catch(deleteItemError);
+            }
+        });
     };
+
     const deleteItemSuccess = (data) => {
         _logger('deleteItemSuccess--->', data);
-        toastr.success('You have successfully Deleted a Menu Item');
         window.location.reload();
     };
-    const deleteItemError = (data) => {
-        _logger('deleteItemError--->', data);
+    const deleteItemError = () => {
         toastr.error('Oops, something went wrong when deleting your Menu Item.');
     };
     const navigateToForm = (aMenuItem, payload) => {
@@ -66,10 +84,10 @@ function MenuItemCard(props) {
     };
 
     return (
-        <Col className="col-12 col-md-4">
+        <Col className="col-12 col-md-4 menu-item-card">
             <Card className="d-block" label={menuItem.name} value={menuItem.id}>
                 <div className="menu-items-image-container">
-                    <Card.Img src={menuItem.imageUrl} className="menu-item-image" alt="Card image cap" />
+                    <Card.Img src={menuItem.imageUrl} className="menu-item-image" alt="No image available" />
                 </div>
                 <Card.Body>
                     <Row>
@@ -77,32 +95,34 @@ function MenuItemCard(props) {
                             <Card.Title as="h5">{menuItem.name}</Card.Title>
                         </Col>
                         <Col>
-                            <Card.Text className="number">${menuItem.unitCost}</Card.Text>
+                            <Card.Title className="number">${menuItem.unitCost}</Card.Title>
                         </Col>
                     </Row>
 
                     <Card.Text>{menuItem.description}</Card.Text>
-                    <Card.Text>Tags: {showFoodSafeTypes()}</Card.Text>
                     <Card.Text>Ingredients: {showIngredients()}</Card.Text>
+                    <Card.Text>Food Safe Types: {showFoodSafeTypes()}</Card.Text>
+                    <Card.Text>Tags: {showTags()}</Card.Text>
+
                     <Row>
                         <Col>
-                            <button
-                                type="button"
-                                className="btn menu-item-card-button"
+                            <Button
+                                variant="primary"
+                                className="btn rounded-pill menu-item-card-button"
                                 onClick={() => onEditClicked(menuItem)}
                                 data-page={menuItem.id}
                                 data-menu={menuItem}>
-                                <PencilSvg />
-                            </button>
+                                <TiPencil />
+                            </Button>
                         </Col>
                         <Col>
-                            <button
-                                type="button"
-                                className="btn menu-item-card-button"
+                            <Button
+                                variant="danger"
+                                className="btn rounded-pill menu-item-card-button"
                                 onClick={onDeleteClicked}
                                 data-page={menuItem.id}>
-                                <TrashSvg />
-                            </button>
+                                <MdDeleteForever />
+                            </Button>
                         </Col>
                     </Row>
                 </Card.Body>
@@ -159,9 +179,6 @@ MenuItemCard.propTypes = {
         ),
         organization: PropTypes.shape({
             id: PropTypes.number.isRequired,
-            name: PropTypes.string.isRequired,
-            logo: PropTypes.string,
-            siteUrl: PropTypes.string,
         }),
 
         orderStatus: PropTypes.shape({

@@ -3,15 +3,17 @@ import logger from 'sabio-debug';
 import { useState, useEffect } from 'react';
 import { Typeahead } from 'react-bootstrap-typeahead';
 import { useLocation } from 'react-router-dom';
-import { useFormikContext } from 'formik';
+import { useFormikContext, ErrorMessage } from 'formik';
 import toastr from 'toastr';
+import PropTypes from 'prop-types';
 
 import tagService from '../../services/tagService';
 import 'toastr/build/toastr.min.css';
 
 const _logger = logger.extend('TagsMultiSelect');
 
-function TagsMultiSelect() {
+function TagsMultiSelect(props) {
+    const organizationId = props?.organizationId;
     const location = useLocation();
     const { setFieldValue, values } = useFormikContext();
     const [tag, setTag] = useState({
@@ -20,17 +22,16 @@ function TagsMultiSelect() {
     });
 
     useEffect(() => {
-        serviceCalls();
-    }, []);
+        if (organizationId > 0) {
+            serviceCalls();
+        }
+    }, [organizationId]);
     const serviceCalls = () => {
-        const orgId = 1; //NOTE: this will be the user.orgId
-        tagService.getTags(orgId).then(getTagSuccess).catch(getTagError);
+        tagService.getTags(organizationId).then(getTagSuccess).catch(getTagError);
     };
-
     const getTagSuccess = (response) => {
         let arrayOfTags = response.items;
         _logger('getTagSuccess', response);
-
         setTag((prevState) => {
             const pd = { ...prevState };
             pd.allTags = arrayOfTags?.map(mappedTags);
@@ -59,7 +60,7 @@ function TagsMultiSelect() {
 
             return valuesName;
         } else {
-            return 'Tags for a  Menu Item';
+            return 'Must select';
         }
     };
     const mapPlaceholder = (mappedTags) => {
@@ -70,7 +71,7 @@ function TagsMultiSelect() {
     };
     return (
         <React.Fragment>
-            <label>Select All Tags</label>
+            <label>Select Tags</label>
             <Typeahead
                 id="tags"
                 name="tags"
@@ -80,7 +81,11 @@ function TagsMultiSelect() {
                 options={tag?.allTags}
                 placeholder={tagsPlaceholder()}
             />
+            <ErrorMessage name="tags" component="div" className="has-error menu-item-error-message" />
         </React.Fragment>
     );
 }
+TagsMultiSelect.propTypes = {
+    organizationId: PropTypes.number.isRequired,
+};
 export default React.memo(TagsMultiSelect);

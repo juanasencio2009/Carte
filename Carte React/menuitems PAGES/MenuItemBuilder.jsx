@@ -15,27 +15,29 @@ import FoodSafeTypesMultiSelect from './FoodSafeTypesMultiSelect';
 import TagsMultiSelect from './TagsMultiSelect';
 import IngredientsMultiSelect from './IngredientsMultiSelect';
 import RenderImage from './RenderImage';
-
+import PropTypes from 'prop-types';
 import 'react-bootstrap-typeahead/css/Typeahead.css';
 import 'toastr/build/toastr.min.css';
 import './menuitems.css';
 
 const _logger = logger.extend('MenuItemBuilder');
 
-function MenuItemBuilder() {
+function MenuItemBuilder(props) {
+    const currentUserOrg = props.currentUserOrg.id;
     const navigate = useNavigate();
     const location = useLocation();
+
     const [formData, setFormData] = useState({
         id: '',
-        organizationId: '1',
-        orderStatusId: '',
+        organization: currentUserOrg,
+        orderStatus: 1,
         unitCost: '',
         name: '',
         description: '',
         imageUrl: '',
-        menuFoodSafeType: '',
-        tags: '',
-        menuIngredients: '',
+        menuFoodSafeType: [],
+        tags: [],
+        menuIngredients: [],
     });
 
     useEffect(() => {
@@ -46,38 +48,25 @@ function MenuItemBuilder() {
         }
     }, [location]);
 
-    const handleSubmit = (values, { resetForm }) => {
-        _logger('handleSubmit', values);
-        debugger;
-        let payload = {
-            id: values?.id,
-            organizationId: values.organization.id,
-            orderStatusId: values.orderStatus.id,
-            unitCost: values.unitCost,
-            name: values.name,
-            description: values.description,
-            imageUrl: values.imageUrl,
-            menuFoodSafeType: values.menuFoodSafeTypes,
-            tags: values.tags,
-            menuIngredients: values.menuIngredients,
-        };
-        if (values.id) {
-            menuItemsService.UpdateAllItems(payload).then(onPutMenuItemSuccess).catch(onPutError);
-            resetForm({});
-        } else {
-            menuItemsService.AddAllItems(payload).then(onPostMenuItemSuccess).catch(onPostError);
-            resetForm({});
-        }
-    };
     const onPostMenuItemSuccess = (data) => {
-        Swal.fire('Good job!', `You have successfully created a Menu Item ${data.item}`, 'success');
+        Swal.fire({
+            icon: 'success',
+            title: `You have successfully created Menu Item ${data.item}`,
+            timer: 3000,
+            timerProgressBar: true,
+        });
         navigate(`/menuitem`);
     };
     const onPostError = () => {
         toastr.error('Wrong information. Please Try again.');
     };
     const onPutMenuItemSuccess = () => {
-        Swal.fire('Good job!', `You have successfully updated a Menu Item`, 'success');
+        Swal.fire({
+            icon: 'success',
+            title: `You have successfully updated a Menu Item`,
+            timer: 3000,
+            timerProgressBar: true,
+        });
         navigate(`/menuitem`);
     };
     const onPutError = () => {
@@ -87,11 +76,53 @@ function MenuItemBuilder() {
     const onFileUpload = (files, setFieldValue) => {
         setFieldValue('imageUrl', files[0].url);
     };
-
     const onBackClicked = () => {
         navigate(`/menuitem`);
     };
+    const handleSubmit = (values) => {
+        _logger('handleSubmit', values);
+        let getFoodSafeTypes = (values) => {
+            if (values.menuFoodSafeType) {
+                let item = values.menuFoodSafeType?.map(mapItems);
+                return item;
+            }
+        };
+        let getTags = (values) => {
+            if (values.tags) {
+                let item = values.tags?.map(mapItems);
+                return item;
+            }
+        };
+        let getMenuIngredients = (values) => {
+            if (values.menuIngredients) {
+                let item = values.menuIngredients?.map(mapItems);
+                return item;
+            }
+        };
+        let payloadToAdd = {
+            organizationId: formData.organization,
+            orderStatusId: parseInt(values.orderStatus),
+            unitCost: parseFloat(values.unitCost),
+            name: values.name,
+            description: values?.description,
+            imageUrl: values?.imageUrl,
+            menuFoodSafeTypes: getFoodSafeTypes(values),
+            tagIds: getTags(values),
+            menuIngredients: getMenuIngredients(values),
+        };
 
+        let payloadToUpdate = payloadToAdd;
+        payloadToAdd.id = values.id;
+
+        if (values.id === '' || !values.id) {
+            menuItemsService.AddAllItems(payloadToAdd).then(onPostMenuItemSuccess).catch(onPostError);
+        } else {
+            menuItemsService.UpdateAllItems(payloadToUpdate).then(onPutMenuItemSuccess).catch(onPutError);
+        }
+    };
+    const mapItems = (mappedTypes) => {
+        return mappedTypes.id;
+    };
     return (
         <React.Fragment>
             <Container>
@@ -123,7 +154,9 @@ function MenuItemBuilder() {
                                                 <div className="Col-6">
                                                     <p></p>
                                                     <Row>
-                                                        <AllMenuItemsMultiSelect />
+                                                        <AllMenuItemsMultiSelect
+                                                            organizationId={formData.organization}
+                                                        />
                                                     </Row>
                                                     <p></p>
                                                     <Row>
@@ -177,6 +210,16 @@ function MenuItemBuilder() {
                                                     </div>
                                                     <p></p>
                                                     <Row>
+                                                        <FoodSafeTypesMultiSelect
+                                                            organizationId={formData.organization}
+                                                        />
+                                                    </Row>
+                                                    <p></p>
+                                                    <Row>
+                                                        <TagsMultiSelect organizationId={formData.organization} />
+                                                    </Row>
+                                                    <p></p>
+                                                    <Row>
                                                         <RenderImage />
                                                         <label>Upload Image File</label>
                                                         <div name="imageUrl">
@@ -186,14 +229,6 @@ function MenuItemBuilder() {
                                                                 }
                                                             />
                                                         </div>
-                                                    </Row>
-                                                    <p></p>
-                                                    <Row>
-                                                        <FoodSafeTypesMultiSelect />
-                                                    </Row>
-                                                    <p></p>
-                                                    <Row>
-                                                        <TagsMultiSelect />
                                                     </Row>
                                                     <p></p>
                                                     <Row sm={6}>
@@ -212,7 +247,7 @@ function MenuItemBuilder() {
                                     <Card.Body>
                                         <div className="Col-6">
                                             <Row className="menu-item-row">
-                                                <IngredientsMultiSelect />
+                                                <IngredientsMultiSelect organizationId={formData.organization} />
                                             </Row>
                                         </div>
                                     </Card.Body>
@@ -225,5 +260,9 @@ function MenuItemBuilder() {
         </React.Fragment>
     );
 }
-
+MenuItemBuilder.propTypes = {
+    currentUserOrg: PropTypes.shape({
+        id: PropTypes.number.isRequired,
+    }),
+};
 export default React.memo(MenuItemBuilder);

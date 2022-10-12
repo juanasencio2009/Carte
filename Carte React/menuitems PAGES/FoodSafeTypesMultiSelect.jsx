@@ -6,7 +6,7 @@ import toastr from 'toastr';
 import 'toastr/build/toastr.min.css';
 import logger from 'sabio-debug';
 import { Typeahead } from 'react-bootstrap-typeahead';
-import { useFormikContext } from 'formik';
+import { useFormikContext, ErrorMessage } from 'formik';
 
 const _logger = logger.extend('FoodSafeTypesMultiSelect');
 
@@ -25,7 +25,6 @@ function FoodSafeTypesMultiSelect() {
     const getFoodSafeTypeSuccess = (response) => {
         _logger('response', response);
         let arrayOfFoods = response.item.foodSafeTypes;
-
         setFoodSafeTypes((prevState) => {
             const pd = { ...prevState };
             pd.allFoodSafeTypes = arrayOfFoods?.map(displayMultiSelect);
@@ -52,7 +51,7 @@ function FoodSafeTypesMultiSelect() {
             let valuesName = value.map(mapPlaceholder);
             return valuesName;
         } else {
-            return 'Select a Food Safe Type';
+            return 'Must select';
         }
     };
     const mapPlaceholder = (mappedTypes) => {
@@ -66,8 +65,8 @@ function FoodSafeTypesMultiSelect() {
             <div name="menuFoodSafeType">
                 <label>Select All Food Safe Types</label>
                 <Typeahead
-                    id="foodSafeType"
-                    key="foodSafeType"
+                    id="menuFoodSafeType"
+                    key="menuFoodSafeType"
                     name="menuFoodSafeType"
                     labelKey="label"
                     multiple
@@ -75,6 +74,7 @@ function FoodSafeTypesMultiSelect() {
                     options={foodSafeTypes?.allFoodSafeTypes}
                     placeholder={foodSafeTypePlaceholder()}
                 />
+                <ErrorMessage name="menuFoodSafeType" component="div" className="has-error menu-item-error-message" />
             </div>
         </React.Fragment>
     );
