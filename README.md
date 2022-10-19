@@ -6,6 +6,9 @@ Greetings, I am [Juan from San Juan](https://www.linkedin.com/in/jasencio/) 👋
 
 I am a Fullstack developer, currently working for Carte's MVP; an Innovative digital menu and ordering platform built for restaurants. 
 
+https://lacarte.azurewebsites.net/
+<---LIVE WEBSITE---
+
 I helped set everything from the ground up that allows a restaurant's menuEditor to manage their restaurant's menu items. They can see their menu items via rendered cards (mobile friendly), and path to add/edit menu items details such as name, price, description, images, ingredients, tags, etc. Implemented dynamic frontend dropdowns, cards, tables, and rendered data that allow restaurant administrators to analyze, create, and edit data in the database. 
 (see Carte React repo)
 
@@ -22,10 +25,4 @@ Established application with a team in AGILE environment, regularly using source
 code quality and continuity. Enthusiastically engaged with my development team throughout the Software Development Life Cycle utilizing peer planning sessions, code reviews, virtual pair programming, source control process, 
 Sr Dev-Jr Dev interactions, and peer-peer testing.
 
-
-https://lacarte.azurewebsites.net/
-<---LIVE WEBSITE---
-
 I truly enjoyed working with in this project and having the privilige to see it get built from the ground up. ❤️ 
-
-
